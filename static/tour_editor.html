@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DEMO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="IE=edge"/>
+    <link rel="stylesheet" href="./style/krpano.editor.css">
+	<link rel="stylesheet" href="./style/zui.min.css">
+    <style>
+        @-ms-viewport {
+            width: device-width;
+        }
+
+        @media only screen and (min-device-width: 800px) {
+            html {
+                overflow: hidden;
+            }
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            color: #FFFFFF;
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<script src="tour.js"></script>
+
+<div id="pano" style="width:100%;height:100%;">
+    <noscript>
+        <table style="width:100%;height:100%;">
+            <tr style="vertical-align:middle;">
+                <td>
+                    <div style="text-align:center;">ERROR:<br/><br/>Javascript not activated<br/><br/></div>
+                </td>
+            </tr>
+        </table>
+    </noscript>
+	<script>
+        embedpano({
+            swf: "tour.swf",
+            xml: "tour.xml",
+            target: "pano",
+            html5: "auto",
+            mobilescale: 1.0,
+            passQueryParameters: true
+        });
+    </script>
+</div>
+
+<div class="frame" style="display: none" name="#viewFrame">
+    <button onclick="setAsDefaultView()" class="btn btn-blue">SET DEFAULT VIEW</button>
+    <div class="frame-line frame-line-top"></div>
+    <div class="frame-line frame-line-right"></div>
+    <div class="frame-line frame-line-bottom"></div>
+    <div class="frame-line frame-line-left"></div>
+    <span class="angle angle-tl"><i class="angle-a"></i><i class="angle-b"></i></span>
+    <span class="angle angle-tr"><i class="angle-a"></i><i class="angle-b"></i></span>
+    <span class="angle angle-bl"><i class="angle-a"></i><i class="angle-b"></i></span>
+    <span class="angle angle-br"><i class="angle-a"></i><i class="angle-b"></i></span>
+</div>
+<div class="overlay overlay-right">
+	<div class="pano-setting-container-save">
+		<div class="btn-group">
+			<button class="btn btn-primary" id="isEdited" onclick="save()">保存</button>
+			<button class="btn J-tool-btn btn-primary advanced-setting-background">RETURN</button>
+		</div>
+	</div>
+	<div class="pano-setting-container">
+		<div class="btn-group btn-group-vertical" style="display:block">
+			<button class="btn J-tool-btn btn-primary btn-block advanced-setting-background" data-target="#viewFrame">VIEW</button>
+			<button class="btn J-tool-btn btn-primary btn-block advanced-setting-background" data-target="#toolHot">HOTPOT</button>
+			<button class="btn J-tool-btn btn-primary btn-block advanced-setting-background" data-target="sandTable">SANDMAP</button>
+			<button class="btn J-tool-btn btn-primary btn-block advanced-setting-background" data-target="#sandSpot">SANDSPOT</button>
+		</div>
+	</div>
+    <div class="tool-panel">
+        <ul class="tool-btn-lst">
+            <li>
+                <div class="tool-main" style="display: none" name="#viewFrame">
+                    <section class="tool-section">
+                        <div style="margin: 5px;">
+                            <label style="padding-right: 5px;vertical-align: middle;" for="autoSpin">AUTO TURN</label>
+                            <input type="checkbox" name="autoSpin" id="autoSpin" style="vertical-align: middle;"
+                                   onclick="autoSpinClick()"/>
+                        </div>
+                        <div id="waitTimeInput" style="display: none;margin: 5px;">
+                            <label style="padding-right: 5px;vertical-align: middle;" for="waitTime">WAIT TIME</label>
+                            <input type="text" class="wait-time-input" id="waitTime" onblur="autoSpinClick()"/>
+                            <label style="padding-left: 5px">SECONDS</label>
+                        </div>
+                        <div style="margin: 5px;">
+                            <label>（DEFAULT FOR ALL VIEW）</label>
+                        </div>
+                    </section>
+                    <section class="tool-section">
+                        <div style="margin: 5px;">
+                            <label>INIT fov
+                                <input type="text" class="fov-input" id="initFov" onblur="updateFov()"/>
+                            </label>
+                        </div>
+                        <section id="sample-pb">
+                            <article>
+                                <div class="number-pb">
+                                    <div class="number-pb-shown" style="display: none">
+                                        <div class="triangle triangle-up-left" style="float: left;"></div>
+                                        <div class="triangle triangle-down">THIS IS TRIANGLE DOWN</div>
+                                        <div class="triangle triangle-up-right" style="float: right;"></div>
+                                    </div>
+                                    <div class="number-pb-num" style="left: 70%;">
+                                    </div>
+                                </div>
+                            </article>
+                        </section>
+                        <div style="margin: 5px;">
+                            <label>MIN fov
+                                <input type="text" class="fov-input" id="initFovMin" onblur="updateFov()"/>
+                            </label>
+                        </div>
+                        <div style="margin: 5px;">
+                            <label>MAX fov
+                                <input type="text" class="fov-input" id="initFovMax" onblur="updateFov()"/>
+                            </label>
+                        </div>
+                        <div style="margin: 5px;">
+                            <input type="button" style="vertical-align: middle;" value="FOR ALL VIEW" class="btn btn-blue"
+                                   onclick="fovForAll()"/>
+                        </div>
+                    </section>
+                </div>
+            </li>
+            <li>
+                <div class="tool-main" name="#toolHot" id="hotToolButton">
+                    <section class="tool-section">
+                        <h3 style="margin-bottom: 5px;">HOS POT TYPE</h3>
+                        <button class="btn btn-blue">CHANGE SCENE</button>
+                    </section>
+                    <section class="tool-section">
+                        <h3 style="margin-bottom: 5px;">HOST LIST</h3>
+                        <ul>
+                            <div id="hotSpotList"></div>
+                            <script id="tplHotSpotList" type="text/html">
+                                {{each list as eachSpot}}
+                                <div class="hot-spot-list" name="{{eachSpot.name}}Hover">
+                                    <div class="hot-spot-img" style="background-image: url('{{eachSpot.url}}')"
+                                         spot-style="{{eachSpot.style}}"></div>
+                                    <div class="hot-spot-text">{{eachSpot.title}}</div>
+                                    <div class="hot-spot-del" onclick="removeHotSpot('{{eachSpot.name}}')">-</div>
+                                </div>
+                                {{/each}}
+                            </script>
+                        </ul>
+                        <button class="hot-spot-button" onclick="showAddHotSpot()">+</button>
+                    </section>
+                </div>
+            </li>
+            <li>
+                <div class="tool-main" name="#sandSpot" id="SandSpotButton">
+                    <section class="tool-section">
+                        <h3 style="margin-bottom: 5px;">SandSpot LIST</h3>
+                        <ul>
+                            <div id="sandSpotList"></div>
+                            <script id="tplSandSpotList" type="text/html">
+                                {{each list as eachSpot}}
+                                <div class="hot-spot-list" name="{{eachSpot.name}}Hover">
+                                    <div class="hot-spot-img" style="background-image: url('{{eachSpot.url}}')"
+                                         spot-style="{{eachSpot.style}}"></div>
+                                    <div class="hot-spot-text">{{eachSpot.name}}</div>
+                                    <div class="hot-spot-del" onclick="removeSandSpot('{{eachSpot.name}}')">-</div>
+                                </div>
+                                {{/each}}
+                            </script>
+                        </ul>
+                        <button class="hot-spot-button" onclick="showAddSandSpot()">+</button>
+                    </section>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="left-column">
+    <div class="scene-select">
+        <div class="blue-banner"></div>
+        <div class="select_scene_text">
+            <p class="p_title">SELECT SCENE</p>
+        </div>
+        <div class="blue-banner"></div>
+        <ul style="margin: 0;padding: 0;">
+            <div id="sceneList"></div>
+            <script id="tplSceneList" type="text/html">
+                {{each list as scene}}
+                <li key="{{scene.index}}" name="{{scene.name}}" class="li-scene">
+                    <div class="thumbs-img-scene-list"
+                         style='background-image: url("panos/{{scene.index+1}}.tiles/thumb.jpg")'></div>
+                    <div class="li-scene-span" onclick="changeScene({{scene.index}})">{{scene.name}}</div>
+                    <input type="hidden" value="{{scene.name}}" class="li-scene-input" onblur="doRename($(this))"/>
+                    <input type="button" class="scene-li-button" onclick="rename($(this).prev())"/>
+                    <div class="circle" onclick="selectWelcomeScene({{scene.index}})"></div>
+                </li>
+                {{/each}}
+            </script>
+        </ul>
+    </div>
+</div>
+<div class="add-hot-pot" style="display: none" name="#toolHot">
+    <div class="add-hot-banner">ADD HOT POT<a class="div-close" onclick="hideAddHotSpot()">×</a></div>
+    <div class="progress-banner">
+        <div class="progress-title progress-title-on" id="selectStyleTitle"><span style="line-height: 30px">SELECT STYLE</span>
+        </div>
+        <div class="progress-title" id="goToSceneTitle"><span style="line-height: 30px">SELECT OBJECT SCENE</span></div>
+        <div class="progress-title" id="writeTitleTitle"><span style="line-height: 30px">INPUT title</span></div>
+    </div>
+    <div>
+        <div class="dive-text">FLY STYLE:</div>
+        <div class="my-open-out">
+            <div class="my-open-in my-open-in-open"></div>
+        </div>
+    </div>
+    <div id="selectStyle" class="add-hot-content">
+        <div class="add-hot-bottom-div">
+            <div class="hot-style"
+                 style="background-image: url('./skin/vtourskin_hotspot.png')"
+                 name="skin_hotspotstyle"></div>
+        </div>
+        <div class="add-hot-button" onclick="nextToSelectTargetScene()">NEXT</div>
+    </div>
+    <div id="goToScene" class="add-hot-content" style="display: none">
+        <div class="add-hot-bottom-div">
+            <div id="targetScene"></div>
+            <script id="tplTargetScene" type="text/html">
+                {{each list as each}}
+                <div class="select-scene-div" name="{{each.name}}">
+                    {{each.name}}
+                    <div class="thumbs-img" style='background-image: url("panos/{{each.index}}.tiles/thumb.jpg")'></div>
+                </div>
+                {{/each}}
+            </script>
+        </div>
+        <div class="add-hot-button" onclick="nextToWriteTitle()">NEXT</div>
+    </div>
+    <div id="writeTitle" class="add-hot-content write-title" style="display: none">
+        <div class="add-hot-bottom-div">
+            <p style="padding: 50px;"><label for="addHotTitle">PLEASE INPUT title（NO INPUT OK）：</label></p>
+            <input type="text" id="addHotTitle"/>
+        </div>
+        <div class="add-hot-button" onclick="addHotSpot()">FINISH</div>
+    </div>
+</div>
+<div class="add-sand-pot" style="display: none" name="#addSandSpot">
+    <div class="add-hot-banner">ADD SAND POT<a class="div-close" onclick="hideAddSandSpot()">×</a></div>
+    <div class="progress-banner">
+        <div class="progress-title progress-title-on" id="selectStyleTitle"><span style="line-height: 30px">SELECT STYLE</span>
+        </div>
+        <div class="progress-title" id="goToSceneTitleSand"><span style="line-height: 30px">SELECT OBJECT SCENE</span></div>
+        <div class="progress-title" id="writeTitleTitleSand"><span style="line-height: 30px">INPUT title</span></div>
+    </div>
+    <div>
+        <div class="dive-text">STYLE:</div>
+        <div class="my-open-out">
+            <div class="my-open-in my-open-in-open"></div>
+        </div>
+    </div>
+    <div id="selectStyleSand" class="add-hot-content">
+        <div class="add-hot-bottom-div">
+            <div class="hot-style"
+                 style="background-image: url('./skin/spot.png')"
+                 name="skin_hotspotstyle"></div>
+        </div>
+        <div class="add-hot-button" onclick="nextToSelectTargetSceneSand()">NEXT</div>
+    </div>
+    <div id="goToSceneSand" class="add-hot-content" style="display: none">
+        <div class="add-hot-bottom-div">
+            <div id="targetSceneSand"></div>
+            <script id="tplTargetSceneSand" type="text/html">
+                {{each list as each}}
+                <div class="select-scene-div" name="{{each.name}}">
+                    {{each.name}}
+                    <div class="thumbs-img" style='background-image: url("panos/{{each.index}}.tiles/thumb.jpg")'></div>
+                </div>
+                {{/each}}
+            </script>
+        </div>
+        <div class="add-hot-button" onclick="nextToWriteTitleSand()">NEXT</div>
+    </div>
+    <div id="writeTitleSand" class="add-hot-content write-title" style="display: none">
+        <div class="add-hot-bottom-div">
+            <p style="padding: 50px;"><label for="addHotTitle">PLEASE INPUT title（NO INPUT OK）：</label></p>
+            <input type="text" id="addSandTitle"/>
+        </div>
+        <div class="add-hot-button" onclick="addSandSpot()">FINISH</div>
+    </div>
+</div>
+<script src="./script/jQuery-2.1.4.min.js"></script>
+<script src="./script/krpano.editor.js"></script>
+<script src="./script/template.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<krpano version="1.19" title="Virtual Tour">
+  <include url="skin/vtourskin.xml"/>
+  <skin_settings maps="false" maps_type="google" maps_bing_api_key="" maps_google_api_key="" maps_zoombuttons="false" gyro="true" webvr="true" webvr_gyro_keeplookingdirection="false" webvr_prev_next_hotspots="true" littleplanetintro="false" title="true" thumbs="true" thumbs_width="120" thumbs_height="80" thumbs_padding="10" thumbs_crop="0|40|240|160" thumbs_opened="false" thumbs_text="false" thumbs_dragging="true" thumbs_onhoverscrolling="false" thumbs_scrollbuttons="false" thumbs_scrollindicator="false" thumbs_loop="false" tooltips_buttons="false" tooltips_thumbs="false" tooltips_hotspots="false" tooltips_mapspots="false" deeplinking="false" loadscene_flags="MERGE" loadscene_blend="OPENBLEND(0.5, 0.0, 0.75, 0.05, linear)" loadscene_blend_prev="SLIDEBLEND(0.5, 180, 0.75, linear)" loadscene_blend_next="SLIDEBLEND(0.5,   0, 0.75, linear)" loadingtext="loading..." layout_width="100%" layout_maxwidth="814" controlbar_width="-24" controlbar_height="40" controlbar_offset="20" controlbar_offset_closed="-40" controlbar_overlap.no-fractionalscaling="10" controlbar_overlap.fractionalscaling="0" design_skin_images="vtourskin.png" design_bgcolor="0x2D3E50" design_bgalpha="0.8" design_bgborder="0" design_bgroundedge="1" design_bgshadow="0 4 10 0x000000 0.3" design_thumbborder_bgborder="3 0xFFFFFF 1.0" design_thumbborder_padding="2" design_thumbborder_bgroundedge="0" design_text_css="color:#FFFFFF; font-family:Arial;" design_text_shadow="1"/>
+  <action name="startup" autorun="onstart">if(startscene === null OR !scene[get(startscene)], copy(startscene,scene[0].name); );loadscene(get(startscene), null, MERGE);if(startactions !== null, startactions() );js('onready');</action>
+  <action name="activatespot">&#xD;
+		&#xD;
+		copy(layer[radar].x, layer[%1].x);&#xD;
+		copy(layer[radar].y, layer[%1].y);&#xD;
+		&#xD;
+		set(layer[radar].heading, %2);&#xD;
+		&#xD;
+		set(layer[radar].visible, true);&#xD;
+	</action>
+  <action name="closemap">&#xD;
+
+	delayedcall(0.5,set(layer[mapcontainer].visible,false)),&#xD;
+	</action>
+  <action name="openmap">&#xD;
+		delayedcall(0.5,set(layer[mapcontainer].visible,true)),&#xD;
+	</action>
+  <action name="draglayer">
+		copy(drag_currentx, x);
+		copy(drag_currenty, y);
+		copy(drag_stagex, mouse.stagex);
+		copy(drag_stagey, mouse.stagey);
+		indexoftxt(align_contains_right, get(align), 'right');
+		indexoftxt(align_contains_bottom, get(align), 'bottom');
+		calc(drag_align_x, align_contains_right GE 0 ? -1 : +1);
+		calc(drag_align_y, align_contains_bottom GE 0 ? -1 : +1);
+		asyncloop(pressed,
+			calc(x, drag_currentx + (mouse.stagex - drag_stagex)*drag_align_x);
+			calc(y, drag_currenty + (mouse.stagey - drag_stagey)*drag_align_y);
+		  );
+	</action>
+  <action name="makelayer">
+		addlayer(button);
+		set(layer[button].url,"skin/spot.png");
+		set(layer[button].align,bottom);
+		set(layer[button].parent,map);
+		set(layer[button].x,300);
+		set(layer[button].y,120);
+	</action>
+  <layer name="mapcontainer" visible="true" keep="true" type="container" bgcolor="0x001" bgalpha="0.5" align="right" x="20" y="120" width="546" height="424" scalechildren="true" scale="0.35">
+    <layer name="map" url="oushi1.jpg" scale="0.8" align="center" x="0" y="0" width="" height="" handcursor="false" onclick="closemap()">
+      <layer name="radar" visible="true" url="plugins/radar.swf" alturl="plugins/radar.js" align="lefttop" edge="center" zorder="1" scale="0.9" fillcolor="0xFFFFFF" fillalpha="0.4" linecolor="0xFF0000" linewidth="0.5" linealpha="0.5" headingoffset="0"/>
+      <layer name="sandspot_1" keep="true" url="skin/spot.png" align="lefttop" scale="0.5" x="330" y="138" onclick="loadscene(test2, null, MERGE, BLEND(1));" ondown="draglayer();"/>
+      <layer name="sandspot_2" keep="true" url="skin/test.png" align="lefttop" scale="0.5" x="248" y="108" onclick="makelayer();" ondown="draglayer();"/>
+    </layer>
+  </layer>
+  <scene name="test1" title="1" onstart="activatespot(pointfr_1, -80);" havevrimage="true" thumburl="panos/1.tiles/thumb.jpg" lat="" lng="" heading="">
+    <view hlookat="-136.3554582663959" vlookat="35.87783275313946" fovtype="MFOV" fov="120" fovmin="120" fovmax="120" limitview="auto"/>
+    <preview url="panos/1.tiles/preview.jpg"/>
+    <image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+      <level tiledimagewidth="2560" tiledimageheight="2560">
+        <cube url="panos/1.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+      </level>
+      <level tiledimagewidth="1280" tiledimageheight="1280">
+        <cube url="panos/1.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+      </level>
+      <level tiledimagewidth="640" tiledimageheight="640">
+        <cube url="panos/1.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+      </level>
+    </image>
+    <image if="webvr.isenabled">
+      <cube url="panos/1.tiles/vr/pano_%s.jpg"/>
+    </image>
+    <autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+    <hotspot ath="-133.51763337529624" atv="24.24986396344146" linkedscene="test1" name="spot1576814440263" title="test1" style="skin_hotspotstyle" dive="true"/>
+    <hotspot ath="-156.42435909562477" atv="21.10503646614095" linkedscene="test1" name="spot1577074908243" title="test1xxx" style="skin_hotspotstyle" dive="true"/>
+    <hotspot ath="-136.35545887766375" atv="35.87783206354474" linkedscene="test2" name="spot1577414574586" title="test2" style="skin_hotspotstyle" dive="true"/>
+  </scene>
+  <scene name="test2" title="2" onstart="activatespot(pointfr_1, -80);" havevrimage="true" thumburl="panos/2.tiles/thumb.jpg" lat="" lng="" heading="">
+    <view hlookat="-136.3554582663959" vlookat="35.87783275313946" fovtype="MFOV" fov="120" fovmin="120" fovmax="120" limitview="auto"/>
+    <preview url="panos/2.tiles/preview.jpg"/>
+    <image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+      <level tiledimagewidth="2560" tiledimageheight="2560">
+        <cube url="panos/2.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+      </level>
+      <level tiledimagewidth="1280" tiledimageheight="1280">
+        <cube url="panos/2.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+      </level>
+      <level tiledimagewidth="640" tiledimageheight="640">
+        <cube url="panos/2.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+      </level>
+    </image>
+    <image if="webvr.isenabled">
+      <cube url="panos/2.tiles/vr/pano_%s.jpg"/>
+    </image>
+    <autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+    <hotspot ath="-148.58004638041223" atv="34.11689126825719" linkedscene="test1" name="spot1576814440263" title="test1" style="skin_hotspotstyle" dive="true"/>
+  </scene>
+  <scene name="test3" title="3" onstart="activatespot(pointfr_1, -80);" havevrimage="true" thumburl="panos/3.tiles/thumb.jpg" lat="" lng="" heading="">
+    <view hlookat="124.92744005303837" vlookat="5.412686394886635" fovtype="MFOV" fov="120" fovmin="70" fovmax="140" limitview="auto"/>
+    <preview url="panos/3.tiles/preview.jpg"/>
+    <image type="CUBE" multires="true" tilesize="512" if="!webvr.isenabled">
+      <level tiledimagewidth="2560" tiledimageheight="2560">
+        <cube url="panos/3.tiles/%s/l3/%v/l3_%s_%v_%h.jpg"/>
+      </level>
+      <level tiledimagewidth="1280" tiledimageheight="1280">
+        <cube url="panos/3.tiles/%s/l2/%v/l2_%s_%v_%h.jpg"/>
+      </level>
+      <level tiledimagewidth="640" tiledimageheight="640">
+        <cube url="panos/3.tiles/%s/l1/%v/l1_%s_%v_%h.jpg"/>
+      </level>
+    </image>
+    <image if="webvr.isenabled">
+      <cube url="panos/3.tiles/vr/pano_%s.jpg"/>
+    </image>
+    <autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
+  </scene>
+</krpano>
