@@ -513,6 +513,7 @@ function save() {
     });
 	postObject[1] = layerList
     var postData = JSON.stringify(postObject);
+    console.log(postData)
     $.ajax({
         type: 'POST',
         contentType: "application/json; charset=utf-8",
