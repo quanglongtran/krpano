@@ -66,7 +66,7 @@
 		align="right"
 		onclick="openurl(https://facebook.com/)"
 		bgroundedge="999"
-	></layer>
+	/>
 
 	<!-- customize skin settings: maps, gyro, webvr, thumbnails, tooltips, layout, design, ... -->
 	<skin_settings
